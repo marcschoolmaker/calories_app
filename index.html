@@ -17,9 +17,12 @@
         <input type="number" id="weight" name="weight" min="30" step="0.1" required autocomplete="off">
         <div class="error" id="weight-error"></div>
       </div>
-      <div class="form-row">
-        <label for="bodyfat">Masse grasse (%)</label>
-        <input type="number" id="bodyfat" name="bodyfat" min="5" max="60" step="0.1" required autocomplete="off">
+      <div class="form-row" id="bodyfat-row">
+        <label for="bodyfat">Taux de graisse (%)</label>
+        <div id="bodyfat-select-area">
+          <button type="button" id="open-bodyfat-modal" class="accent-btn" style="width:100%;">Définir mon taux de graisse</button>
+        </div>
+        <input type="hidden" id="bodyfat" name="bodyfat" required>
         <div class="error" id="bodyfat-error"></div>
       </div>
       <div class="form-row">
@@ -57,6 +60,47 @@
     </form>
   </section>
   <section id="result-section"></section>
+  <div id="bodyfat-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" id="close-bodyfat-modal" aria-label="Fermer">&times;</button>
+      <h2>Estimation du taux de graisse</h2>
+      <div class="gender-toggle">
+        <label><input type="radio" name="gender" value="femme" checked> Femme</label>
+        <label><input type="radio" name="gender" value="homme"> Homme</label>
+      </div>
+      <div id="bodyfat-images-femme" class="bodyfat-images">
+        <!-- 9 images pour femme -->
+        <div class="img-grid">
+          <img src="images/femme1.jpg" data-value="11" alt="10-12%">
+          <img src="images/femme2.jpg" data-value="16" alt="15-17%">
+          <img src="images/femme3.jpg" data-value="19" alt="18-20%">
+          <img src="images/femme4.jpg" data-value="22" alt="21-23%">
+          <img src="images/femme5.jpg" data-value="25" alt="24-26%">
+          <img src="images/femme6.jpg" data-value="28" alt="27-29%">
+          <img src="images/femme7.jpg" data-value="33" alt="30-35%">
+          <img src="images/femme8.jpg" data-value="38" alt="36-40%">
+          <img src="images/femme9.jpg" data-value="50" alt="50%+">
+        </div>
+      </div>
+      <div id="bodyfat-images-homme" class="bodyfat-images" style="display:none;">
+        <!-- 9 images pour homme -->
+        <div class="img-grid">
+          <img src="images/homme1.jpg" data-value="3" alt="1-4%">
+          <img src="images/homme2.jpg" data-value="6" alt="5-7%">
+          <img src="images/homme3.jpg" data-value="9" alt="8-10%">
+          <img src="images/homme4.jpg" data-value="11" alt="11-12%">
+          <img src="images/homme5.jpg" data-value="14" alt="13-15%">
+          <img src="images/homme6.jpg" data-value="18" alt="16-19%">
+          <img src="images/homme7.jpg" data-value="22" alt="20-24%">
+          <img src="images/homme8.jpg" data-value="28" alt="25-30%">
+          <img src="images/homme9.jpg" data-value="38" alt="35-40%">
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:1.2rem;">
+        <button id="validate-bodyfat" class="accent-btn" disabled>Valider</button>
+      </div>
+    </div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html> 

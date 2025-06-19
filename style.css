@@ -187,4 +187,135 @@ button[type="submit"]:disabled {
     width: 100%;
     max-width: 100%;
   }
+}
+/* =========================
+   MODALE TAUX DE GRAISSE
+========================= */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(24,24,27,0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  max-width: 540px;
+  width: 100%;
+  position: relative;
+  animation: fadeIn 0.3s;
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+}
+.gender-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin: 1.2rem 0 1.5rem 0;
+  font-size: 1.1rem;
+}
+.gender-toggle label {
+  cursor: pointer;
+  font-weight: 500;
+}
+.img-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 0.7rem;
+}
+.bodyfat-images img {
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: border 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px 0 rgba(80,80,120,0.07);
+}
+.bodyfat-images img.selected {
+  border: 2.5px solid var(--accent);
+  box-shadow: 0 4px 16px 0 rgba(79,70,229,0.13);
+}
+.accent-btn {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.8rem 2.2rem;
+  box-shadow: 0 2px 8px 0 rgba(79,70,229,0.08);
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.accent-btn:disabled {
+  background: #A5B4FC;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 98vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+  }
+  .img-grid {
+    gap: 0.5rem;
+  }
+}
+.bodyfat-value-display {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: #f3f4f6;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.13rem;
+  font-weight: 500;
+  color: var(--text);
+  justify-content: space-between;
+}
+.bodyfat-value-display .edit-bodyfat-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0.2em 0.4em;
+  border-radius: 0.5em;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+.bodyfat-value-display .edit-bodyfat-btn:hover {
+  background: #e0e7ff;
+}
+.secondary-btn {
+  background: #F1F5F9;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 1.08rem;
+  border: 1.5px solid var(--input-border);
+  border-radius: 0.7rem;
+  padding: 0.8rem 2.2rem;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background 0.15s, border 0.15s, color 0.15s;
+}
+.secondary-btn:hover {
+  background: #E0E7FF;
+  border-color: var(--accent);
+  color: var(--accent);
 } 

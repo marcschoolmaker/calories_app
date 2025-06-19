@@ -28,6 +28,120 @@ const errors = {
   fat:     document.getElementById('fat-error'),
 };
 
+// =========================
+//  JS: MODALE TAUX DE GRAISSE
+// =========================
+const openBodyfatBtn = document.getElementById('open-bodyfat-modal');
+const bodyfatModal = document.getElementById('bodyfat-modal');
+const closeBodyfatBtn = document.getElementById('close-bodyfat-modal');
+const validateBodyfatBtn = document.getElementById('validate-bodyfat');
+const bodyfatInput = document.getElementById('bodyfat');
+const femmeGrid = document.getElementById('bodyfat-images-femme');
+const hommeGrid = document.getElementById('bodyfat-images-homme');
+const genderRadios = document.querySelectorAll('input[name="gender"]');
+const bodyfatSelectArea = document.getElementById('bodyfat-select-area');
+
+let selectedBodyfat = null;
+let selectedGender = 'femme';
+
+function showBodyfatValueDisplay(value) {
+  // Toujours utiliser la valeur du champ caché si value n'est pas valide
+  const displayValue = (!value || isNaN(Number(value))) ? bodyfatInput.value : value;
+  if (!displayValue || isNaN(Number(displayValue))) {
+    showBodyfatButton();
+    return;
+  }
+  bodyfatSelectArea.innerHTML = `
+    <div class="bodyfat-value-display">
+      <span>Taux de graisse : <strong>${displayValue}%</strong></span>
+      <button type="button" class="edit-bodyfat-btn" id="edit-bodyfat-btn" title="Modifier">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.586 3.586a2 2 0 0 1 2.828 2.828l-8.25 8.25a2 2 0 0 1-.878.513l-3.036.867a.5.5 0 0 1-.62-.62l.867-3.036a2 2 0 0 1 .513-.878l8.25-8.25ZM15 2a4 4 0 0 0-2.828 1.172l-8.25 8.25a4 4 0 0 0-1.027 1.756l-.867 3.036A2 2 0 0 0 3.786 18.1l3.036-.867a4 4 0 0 0 1.756-1.027l8.25-8.25A4 4 0 0 0 15 2Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  `;
+  document.getElementById('edit-bodyfat-btn').addEventListener('click', () => {
+    openBodyfatModal();
+  });
+}
+function showBodyfatButton() {
+  bodyfatSelectArea.innerHTML = `<button type="button" id="open-bodyfat-modal" class="secondary-btn" style="width:100%;">Définir mon taux de graisse</button>`;
+  document.getElementById('open-bodyfat-modal').addEventListener('click', openBodyfatModal);
+}
+function openBodyfatModal() {
+  bodyfatModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Pré-sélectionner l'image si une valeur existe déjà
+  const current = bodyfatInput.value;
+  if (current) {
+    selectedBodyfat = current;
+    const grid = (selectedGender === 'femme' ? femmeGrid : hommeGrid);
+    [...femmeGrid.querySelectorAll('img'), ...hommeGrid.querySelectorAll('img')].forEach(img => img.classList.remove('selected'));
+    const img = grid.querySelector('img[data-value="' + current + '"]');
+    if (img) {
+      img.classList.add('selected');
+      validateBodyfatBtn.disabled = false;
+    }
+  } else {
+    clearBodyfatSelection();
+  }
+}
+function closeBodyfatModal() {
+  bodyfatModal.style.display = 'none';
+  document.body.style.overflow = '';
+  clearBodyfatSelection();
+}
+function clearBodyfatSelection() {
+  [...femmeGrid.querySelectorAll('img'), ...hommeGrid.querySelectorAll('img')].forEach(img => img.classList.remove('selected'));
+  // Ne pas réinitialiser selectedBodyfat si une valeur existe déjà
+  if (!bodyfatInput.value) {
+    selectedBodyfat = null;
+    validateBodyfatBtn.disabled = true;
+  }
+}
+genderRadios.forEach(radio => {
+  radio.addEventListener('change', e => {
+    selectedGender = e.target.value;
+    if (selectedGender === 'femme') {
+      femmeGrid.style.display = '';
+      hommeGrid.style.display = 'none';
+    } else {
+      femmeGrid.style.display = 'none';
+      hommeGrid.style.display = '';
+    }
+    clearBodyfatSelection();
+  });
+});
+function handleImageClick(e) {
+  const imgs = (selectedGender === 'femme' ? femmeGrid : hommeGrid).querySelectorAll('img');
+  imgs.forEach(img => img.classList.remove('selected'));
+  e.target.classList.add('selected');
+  selectedBodyfat = e.target.getAttribute('data-value');
+  validateBodyfatBtn.disabled = false;
+}
+femmeGrid.querySelectorAll('img').forEach(img => img.addEventListener('click', handleImageClick));
+hommeGrid.querySelectorAll('img').forEach(img => img.addEventListener('click', handleImageClick));
+validateBodyfatBtn.addEventListener('click', () => {
+  if (selectedBodyfat) {
+    bodyfatInput.value = selectedBodyfat;
+    closeBodyfatModal();
+    setTimeout(() => {
+      showBodyfatValueDisplay();
+      validateForm(false);
+    }, 0);
+  }
+});
+closeBodyfatBtn.addEventListener('click', () => {
+  closeBodyfatModal();
+  // Si pas de valeur sélectionnée, remettre le bouton
+  if (!bodyfatInput.value) showBodyfatButton();
+});
+bodyfatModal.addEventListener('mousedown', function(e) {
+  if (e.target === bodyfatModal) {
+    closeBodyfatModal();
+    if (!bodyfatInput.value) showBodyfatButton();
+  }
+});
+
 // Validate a single field
 function validateField(key) {
   const { el, min, max, required } = fields[key];
@@ -35,12 +149,17 @@ function validateField(key) {
   let err = '';
   if (required && val === '') {
     err = 'Champ requis';
-  } else if (key !== 'activity') {
+  } else if (key !== 'activity' && key !== 'bodyfat') {
     let num = parseFloat(val);
     if (isNaN(num)) {
       err = 'Entrée invalide';
     } else if ((min !== undefined && num < min) || (max !== undefined && num > max)) {
       err = `Doit être compris entre ${min} et ${max}`;
+    }
+  } else if (key === 'bodyfat') {
+    let num = parseFloat(val);
+    if (isNaN(num) || num < 5 || num > 60) {
+      err = 'Sélectionnez un taux de graisse valide';
     }
   }
   errors[key].textContent = err;
@@ -171,4 +290,11 @@ function renderResult(rows) {
       <div class="result-note">Macros arrondis au multiple de 5 g pour simplifier.</div>
     </div>
   `;
+}
+
+// Initialisation : bouton seul
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', showBodyfatButton);
+} else {
+  showBodyfatButton();
 } 
