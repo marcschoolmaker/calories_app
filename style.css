@@ -41,7 +41,7 @@ h1 {
   box-shadow: var(--shadow);
   border-radius: var(--radius);
   padding: 2rem 1.5rem;
-  max-width: 420px;
+  max-width: 600px;
   width: 100%;
   margin: 0 auto 2rem auto;
   transition: box-shadow 0.2s;
@@ -74,8 +74,10 @@ label {
   font-weight: 500;
   margin-bottom: 0.1rem;
 }
-input[type="number"] {
+input[type="number"],
+select {
   width: 100%;
+  min-width: 0;
   padding: 0.7rem 1rem;
   border-radius: 0.7rem;
   border: 1.5px solid var(--input-border);
@@ -83,8 +85,10 @@ input[type="number"] {
   font-size: 1.1rem;
   transition: border 0.2s;
   outline: none;
+  box-sizing: border-box;
 }
-input[type="number"]:focus {
+input[type="number"]:focus,
+select:focus {
   border-color: var(--input-focus);
 }
 .error {
@@ -177,5 +181,10 @@ button[type="submit"]:disabled {
     width: 60%;
     margin: 1.2rem auto 0 auto;
     display: block;
+  }
+  select {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
   }
 } 

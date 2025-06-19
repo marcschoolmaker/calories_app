@@ -10,7 +10,7 @@ const inputCard = document.getElementById('input-card');
 const fields = {
   weight:    { el: document.getElementById('weight'),    min: 30,   max: 500,   required: true },
   bodyfat:   { el: document.getElementById('bodyfat'),   min: 5,    max: 60,    required: true },
-  activity:  { el: document.getElementById('activity'),  min: 1.15, max: 1.8,   required: true },
+  activity:  { el: document.getElementById('activity'),  required: true },
   surplus:   { el: document.getElementById('surplus'),   min: 5,    max: 15,    required: true },
   deficit:   { el: document.getElementById('deficit'),   min: 10,   max: 30,    required: true },
   protein:   { el: document.getElementById('protein'),   min: 1.5,  max: 2.5,   required: true },
@@ -32,14 +32,16 @@ const errors = {
 function validateField(key) {
   const { el, min, max, required } = fields[key];
   const val = el.value.trim();
-  let num = parseFloat(val);
   let err = '';
   if (required && val === '') {
     err = 'Champ requis';
-  } else if (isNaN(num)) {
-    err = 'Entrée invalide';
-  } else if (num < min || num > max) {
-    err = `Doit être compris entre ${min} et ${max}`;
+  } else if (key !== 'activity') {
+    let num = parseFloat(val);
+    if (isNaN(num)) {
+      err = 'Entrée invalide';
+    } else if ((min !== undefined && num < min) || (max !== undefined && num > max)) {
+      err = `Doit être compris entre ${min} et ${max}`;
+    }
   }
   errors[key].textContent = err;
   return !err;
@@ -77,7 +79,7 @@ function calcMacros({weight, bodyfat, activity, surplus, deficit, protein, fat})
   // Defensive parse
   weight = parseFloat(weight);
   bodyfat = parseFloat(bodyfat);
-  activity = parseFloat(activity);
+  activity = parseFloat(activity); // select value
   surplus = parseFloat(surplus);
   deficit = parseFloat(deficit);
   protein = parseFloat(protein);
