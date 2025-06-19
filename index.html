@@ -200,32 +200,32 @@
         <div class="error" id="weight-error"></div>
       </div>
       <div class="form-row">
-        <label for="bodyfat">Body-fat %</label>
+        <label for="bodyfat">Masse grasse (%)</label>
         <input type="number" id="bodyfat" name="bodyfat" min="5" max="60" step="0.1" required autocomplete="off">
         <div class="error" id="bodyfat-error"></div>
       </div>
       <div class="form-row">
-        <label for="activity">Activity multiplier</label>
+        <label for="activity">Facteur d'activité</label>
         <input type="number" id="activity" name="activity" min="1.15" max="1.8" step="0.01" required autocomplete="off">
         <div class="error" id="activity-error"></div>
       </div>
       <div class="form-row">
-        <label for="surplus">Surplus for bulk (%)</label>
+        <label for="surplus">Surplus pour prise de masse (%)</label>
         <input type="number" id="surplus" name="surplus" min="5" max="15" step="1" value="10" required autocomplete="off">
         <div class="error" id="surplus-error"></div>
       </div>
       <div class="form-row">
-        <label for="deficit">Deficit for cut (%)</label>
+        <label for="deficit">Déficit pour sèche (%)</label>
         <input type="number" id="deficit" name="deficit" min="10" max="30" step="1" value="25" required autocomplete="off">
         <div class="error" id="deficit-error"></div>
       </div>
       <div class="form-row">
-        <label for="protein">Protein coeff. (g/kg LM)</label>
+        <label for="protein">Coefficient protéines (g/kg MG)</label>
         <input type="number" id="protein" name="protein" min="1.5" max="2.5" step="0.01" value="2.3" required autocomplete="off">
         <div class="error" id="protein-error"></div>
       </div>
       <div class="form-row">
-        <label for="fat">Fat coeff. (g/kg LM)</label>
+        <label for="fat">Coefficient lipides (g/kg MG)</label>
         <input type="number" id="fat" name="fat" min="0.7" max="1.2" step="0.01" value="0.9" required autocomplete="off">
         <div class="error" id="fat-error"></div>
       </div>
@@ -275,7 +275,7 @@
       } else if (isNaN(num)) {
         err = 'Entrée invalide';
       } else if (num < min || num > max) {
-        err = `Doit être entre ${min} et ${max}`;
+        err = `Doit être compris entre ${min} et ${max}`;
       }
       errors[key].textContent = err;
       return !err;
@@ -331,8 +331,13 @@
         const fatKcal = fatG * 9;
         const carbKcal = cal - protKcal - fatKcal;
         const carbG = carbKcal / 4;
+        // Traduction des objectifs
+        let objectif = goal;
+        if (goal === 'Maintenance') objectif = 'Maintien';
+        if (goal === 'Cut') objectif = 'Sèche';
+        if (goal === 'Bulk') objectif = 'Prise de masse';
         return {
-          goal,
+          goal: objectif,
           calories: Math.round(cal),
           protein: round5(protG),
           carbs: round5(carbG > 0 ? carbG : 0),
@@ -378,11 +383,11 @@
           <table class="result-table">
             <thead>
               <tr>
-                <th>Goal</th>
+                <th>Objectif</th>
                 <th>Calories</th>
-                <th>Protein (g)</th>
-                <th>Carbs (g)</th>
-                <th>Fat (g)</th>
+                <th>Protéines (g)</th>
+                <th>Glucides (g)</th>
+                <th>Lipides (g)</th>
               </tr>
             </thead>
             <tbody>
