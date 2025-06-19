@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculateur de Calories & Macros</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* =========================
+       CSS VARIABLES & RESET
+    ========================= */
+    :root {
+      --accent: #4F46E5;
+      --bg: #F8FAFC;
+      --card-bg: #fff;
+      --text: #18181B;
+      --error: #F87171;
+      --shadow: 0 4px 24px 0 rgba(80, 80, 120, 0.08);
+      --radius: 1.1rem;
+      --input-bg: #F1F5F9;
+      --input-border: #E5E7EB;
+      --input-focus: #6366F1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem 3rem 1rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: -1px;
+      text-align: center;
+    }
+    /* =========================
+       CARD & LAYOUT
+    ========================= */
+    .card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      max-width: 420px;
+      width: 100%;
+      margin: 0 auto 2rem auto;
+      transition: box-shadow 0.2s;
+    }
+    .card.shake {
+      animation: shake 0.3s;
+    }
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-8px); }
+      40%, 60% { transform: translateX(8px); }
+      100% { transform: none; }
+    }
+    /* =========================
+       FORM & INPUTS
+    ========================= */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    label {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.1rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 0.7rem;
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      font-size: 1.1rem;
+      transition: border 0.2s;
+      outline: none;
+    }
+    input[type="number"]:focus {
+      border-color: var(--input-focus);
+    }
+    .error {
+      color: var(--error);
+      font-size: 0.98rem;
+      margin-top: 0.1rem;
+      min-height: 1.2em;
+      font-weight: 400;
+      letter-spacing: -0.2px;
+    }
+    button[type="submit"] {
+      margin-top: 0.7rem;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 0.7rem;
+      padding: 0.9rem 0;
+      box-shadow: 0 2px 8px 0 rgba(79,70,229,0.08);
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    button[type="submit"]:disabled {
+      background: #A5B4FC;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    /* =========================
+       RESULT CARD & TABLE
+    ========================= */
+    .result-card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem 1.2rem 1.5rem;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      opacity: 0;
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.1s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0.7rem;
+    }
+    .result-table th, .result-table td {
+      padding: 0.7rem 0.3rem;
+      text-align: center;
+      font-size: 1.08rem;
+    }
+    .result-table th {
+      font-weight: 600;
+      background: #F3F4F6;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+    .result-table tr:not(:last-child) td {
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .result-note {
+      font-size: 0.98rem;
+      color: #64748B;
+      text-align: center;
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+    /* =========================
+       RESPONSIVE DESIGN
+    ========================= */
+    @media (min-width: 768px) {
+      .card form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem 2.2rem;
+      }
+      .form-row {
+        flex-direction: column;
+      }
+      .card form .form-row:nth-last-child(2),
+      .card form .form-row:last-child {
+        grid-column: 1 / -1;
+      }
+      button[type="submit"] {
+        width: 60%;
+        margin: 1.2rem auto 0 auto;
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculateur de Calories & Macros</h1>
+  <section class="card" id="input-card">
+    <form id="macro-form" novalidate>
+      <div class="form-row">
+        <label for="weight">Poids (kg)</label>
+        <input type="number" id="weight" name="weight" min="30" step="0.1" required autocomplete="off">
+        <div class="error" id="weight-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="bodyfat">Body-fat %</label>
+        <input type="number" id="bodyfat" name="bodyfat" min="5" max="60" step="0.1" required autocomplete="off">
+        <div class="error" id="bodyfat-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="activity">Activity multiplier</label>
+        <input type="number" id="activity" name="activity" min="1.15" max="1.8" step="0.01" required autocomplete="off">
+        <div class="error" id="activity-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="surplus">Surplus for bulk (%)</label>
+        <input type="number" id="surplus" name="surplus" min="5" max="15" step="1" value="10" required autocomplete="off">
+        <div class="error" id="surplus-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="deficit">Deficit for cut (%)</label>
+        <input type="number" id="deficit" name="deficit" min="10" max="30" step="1" value="25" required autocomplete="off">
+        <div class="error" id="deficit-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="protein">Protein coeff. (g/kg LM)</label>
+        <input type="number" id="protein" name="protein" min="1.5" max="2.5" step="0.01" value="2.3" required autocomplete="off">
+        <div class="error" id="protein-error"></div>
+      </div>
+      <div class="form-row">
+        <label for="fat">Fat coeff. (g/kg LM)</label>
+        <input type="number" id="fat" name="fat" min="0.7" max="1.2" step="0.01" value="0.9" required autocomplete="off">
+        <div class="error" id="fat-error"></div>
+      </div>
+      <button type="submit" id="calc-btn" disabled>Calculer</button>
+    </form>
+  </section>
+  <section id="result-section"></section>
+  <script>
+    // =========================
+    //  JS: FORM VALIDATION
+    // =========================
+    const form = document.getElementById('macro-form');
+    const calcBtn = document.getElementById('calc-btn');
+    const resultSection = document.getElementById('result-section');
+    const inputCard = document.getElementById('input-card');
+
+    // Input fields
+    const fields = {
+      weight:    { el: document.getElementById('weight'),    min: 30,   max: 500,   required: true },
+      bodyfat:   { el: document.getElementById('bodyfat'),   min: 5,    max: 60,    required: true },
+      activity:  { el: document.getElementById('activity'),  min: 1.15, max: 1.8,   required: true },
+      surplus:   { el: document.getElementById('surplus'),   min: 5,    max: 15,    required: true },
+      deficit:   { el: document.getElementById('deficit'),   min: 10,   max: 30,    required: true },
+      protein:   { el: document.getElementById('protein'),   min: 1.5,  max: 2.5,   required: true },
+      fat:       { el: document.getElementById('fat'),       min: 0.7,  max: 1.2,   required: true },
+    };
+
+    // Error elements
+    const errors = {
+      weight:  document.getElementById('weight-error'),
+      bodyfat: document.getElementById('bodyfat-error'),
+      activity:document.getElementById('activity-error'),
+      surplus: document.getElementById('surplus-error'),
+      deficit: document.getElementById('deficit-error'),
+      protein: document.getElementById('protein-error'),
+      fat:     document.getElementById('fat-error'),
+    };
+
+    // Validate a single field
+    function validateField(key) {
+      const { el, min, max, required } = fields[key];
+      const val = el.value.trim();
+      let num = parseFloat(val);
+      let err = '';
+      if (required && val === '') {
+        err = 'Champ requis';
+      } else if (isNaN(num)) {
+        err = 'Entrée invalide';
+      } else if (num < min || num > max) {
+        err = `Doit être entre ${min} et ${max}`;
+      }
+      errors[key].textContent = err;
+      return !err;
+    }
+
+    // Validate all fields, return if form is valid
+    function validateForm(showAllErrors = false) {
+      let valid = true;
+      for (const key in fields) {
+        const isValid = validateField(key);
+        if (!isValid) valid = false;
+        if (!showAllErrors && (key === 'weight' || key === 'bodyfat' || key === 'activity')) {
+          // Only show errors for required fields on input
+          errors[key].textContent = errors[key].textContent;
+        }
+      }
+      // Enable button only if required fields are valid
+      const reqValid = ['weight','bodyfat','activity'].every(k => validateField(k));
+      calcBtn.disabled = !reqValid;
+      return valid;
+    }
+
+    // Attach input listeners
+    Object.keys(fields).forEach(key => {
+      fields[key].el.addEventListener('input', () => validateForm(false));
+    });
+
+    // =========================
+    //  JS: CALCULATION LOGIC
+    // =========================
+    function round5(x) {
+      return Math.round(x / 5) * 5;
+    }
+    function calcMacros({weight, bodyfat, activity, surplus, deficit, protein, fat}) {
+      // Defensive parse
+      weight = parseFloat(weight);
+      bodyfat = parseFloat(bodyfat);
+      activity = parseFloat(activity);
+      surplus = parseFloat(surplus);
+      deficit = parseFloat(deficit);
+      protein = parseFloat(protein);
+      fat = parseFloat(fat);
+      if ([weight, bodyfat, activity, surplus, deficit, protein, fat].some(isNaN)) return null;
+      const leanMass = weight * (1 - bodyfat/100);
+      const BMR = 370 + 21.6 * leanMass;
+      const maintenance = BMR * activity;
+      const bulkCals = maintenance * (1 + surplus/100);
+      const cutCals = maintenance * (1 - deficit/100);
+      const protG = protein * leanMass;
+      const fatG = fat * leanMass;
+      function macroRow(goal, cal) {
+        const protKcal = protG * 4;
+        const fatKcal = fatG * 9;
+        const carbKcal = cal - protKcal - fatKcal;
+        const carbG = carbKcal / 4;
+        return {
+          goal,
+          calories: Math.round(cal),
+          protein: round5(protG),
+          carbs: round5(carbG > 0 ? carbG : 0),
+          fat: round5(fatG)
+        };
+      }
+      return [
+        macroRow('Maintenance', maintenance),
+        macroRow('Cut', cutCals),
+        macroRow('Bulk', bulkCals)
+      ];
+    }
+
+    // =========================
+    //  JS: FORM SUBMIT & OUTPUT
+    // =========================
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Validate all fields and show errors
+      const valid = validateForm(true);
+      if (!valid) {
+        // Shake card
+        inputCard.classList.remove('shake');
+        void inputCard.offsetWidth; // force reflow
+        inputCard.classList.add('shake');
+        return;
+      }
+      // Gather values
+      const values = {};
+      for (const key in fields) {
+        values[key] = fields[key].el.value;
+      }
+      const result = calcMacros(values);
+      if (!result) return;
+      // Render result
+      renderResult(result);
+    });
+
+    // Render result card
+    function renderResult(rows) {
+      resultSection.innerHTML = `
+        <div class="result-card">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Goal</th>
+                <th>Calories</th>
+                <th>Protein (g)</th>
+                <th>Carbs (g)</th>
+                <th>Fat (g)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td>${r.goal}</td>
+                  <td>${r.calories}</td>
+                  <td>${r.protein}</td>
+                  <td>${r.carbs}</td>
+                  <td>${r.fat}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div class="result-note">Macros arrondis au multiple de 5 g pour simplifier.</div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html> 
