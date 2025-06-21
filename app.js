@@ -239,7 +239,7 @@ function calcMacros({weight, bodyfat, activity, surplus, deficit, protein, fat})
 // =========================
 //  JS: FORM SUBMIT & OUTPUT
 // =========================
-form.addEventListener('submit', function(e) {
+calcBtn.addEventListener('click', function(e) {
   e.preventDefault();
   // Validate all fields and show errors
   const valid = validateForm(true);
